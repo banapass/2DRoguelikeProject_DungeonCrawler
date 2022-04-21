@@ -5,12 +5,16 @@ using UnityEngine;
 public abstract class AbstractDungeonGenerator : MonoBehaviour
 {
     [SerializeField] protected TilemapVisualizer tilemapVisualizer;
-    [SerializeField] protected Vector2Int startPos = Vector2Int.zero;
+    [SerializeField] protected Vector2 startPos = Vector2.zero;
 
     public void GenerateDungeon()
     {
         tilemapVisualizer.Clear();
         RunProceduralGeneration();
+    }
+    virtual protected void Start()
+    {
+        GenerateDungeon();
     }
     public void DungeonClear()
     {

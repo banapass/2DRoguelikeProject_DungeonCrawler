@@ -7,6 +7,7 @@ public class Player : Character
 {
     [SerializeField] List<Item> inventroy;
     [SerializeField] int levelUpExp;
+    [SerializeField] LayerMask wallLayer;
     [SerializeField] GameObject test;
 
     int Exp
@@ -40,7 +41,7 @@ public class Player : Character
     void Start()
     {
         StartCoroutine(Move());
-        
+
     }
 
     // Update is called once per frame
@@ -50,7 +51,7 @@ public class Player : Character
         {
             IsMyTurn = true;
         }
-        if(Input.GetKeyDown(KeyCode.KeypadEnter))
+        if (Input.GetKeyDown(KeyCode.KeypadEnter))
         {
             SearchMove(2);
         }
@@ -61,28 +62,36 @@ public class Player : Character
         while (isMyTurn)
         {
 
-            if (Input.GetKeyDown(KeyCode.W))
+            if (Input.GetKeyDown(KeyCode.W) && MoveDirectionCheck(Vector3.up))
             {
                 transform.position += Vector3.up;
                 isMyTurn = false;
             }
-            else if (Input.GetKeyDown(KeyCode.S))
+            else if (Input.GetKeyDown(KeyCode.S) && MoveDirectionCheck(Vector3.down))
             {
                 transform.position += Vector3.down;
                 isMyTurn = false;
             }
-            else if (Input.GetKeyDown(KeyCode.A))
+            else if (Input.GetKeyDown(KeyCode.A) && MoveDirectionCheck(Vector3.left))
             {
                 transform.position += Vector3.left;
                 isMyTurn = false;
             }
-            if (Input.GetKeyDown(KeyCode.D))
+            if (Input.GetKeyDown(KeyCode.D) && MoveDirectionCheck(Vector3.right))
             {
                 transform.position += Vector3.right;
                 isMyTurn = false;
             }
             yield return null;
         }
+    }
+    bool MoveDirectionCheck(Vector3 dir)
+    {
+        if (Physics2D.Linecast(transform.position, transform.position + dir, wallLayer))
+        {
+            return false;
+        }
+        return true;
     }
     private void LevelUp()
     {
@@ -117,7 +126,7 @@ public class Player : Character
         q.Enqueue(transform.position);
 
 
-        for(int i = 0; i < moveRange; i++)
+        for (int i = 0; i < moveRange; i++)
         {
             FindPath(q);
         }
@@ -130,7 +139,7 @@ public class Player : Character
                           Vector3.left, Vector3.right };
 
         int qCount = q.Count;
-        for(int i = 0; i < qCount; i++)
+        for (int i = 0; i < qCount; i++)
         {
             Vector3 curPos = q.Peek();
             q.Dequeue();
@@ -147,11 +156,13 @@ public class Player : Character
     }
     void CreatePath(HashSet<Vector3> positions)
     {
-        foreach(var pos in positions)
+        foreach (var pos in positions)
         {
-            
-            GameObject temp = Instantiate(test);
-            temp.transform.position = pos;
+            if (CorridorFirstDungeonGenerator.floorPositions.Contains(pos))
+            {
+                GameObject temp = Instantiate(test);
+                temp.transform.position = pos;
+            }
         }
     }
 

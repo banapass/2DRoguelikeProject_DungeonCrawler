@@ -5,10 +5,10 @@ using UnityEngine;
 public static class ProveduralGenerationAlgorithms
 {
     // 시작 지점부터 랜덤으로 방향을 뽑아 HashSet에 저장하고 리턴함
-    public static HashSet<Vector2Int> SimpleRandomWalk(Vector2Int startPos, int walkLenth)
+    public static HashSet<Vector2> SimpleRandomWalk(Vector2 startPos, int walkLenth)
     {
-        HashSet<Vector2Int> path = new HashSet<Vector2Int>();
-        
+        HashSet<Vector2> path = new HashSet<Vector2>();
+
         path.Add(startPos);
         var previousPos = startPos;
 
@@ -21,9 +21,9 @@ public static class ProveduralGenerationAlgorithms
         return path;
     }
     // 랜덤으로 방향을 정해서 일직선 길을 만듬
-    public static List<Vector2Int> RandomWalkCorridor(Vector2Int startPositions, int corridorLength)
+    public static List<Vector2> RandomWalkCorridor(Vector2 startPositions, int corridorLength)
     {
-        List<Vector2Int> corridor = new List<Vector2Int>();
+        List<Vector2> corridor = new List<Vector2>();
         var diration = Direction2D.GetRandomCardinalDireaction();
         var currentPosition = startPositions;
         corridor.Add(currentPosition);
@@ -36,10 +36,10 @@ public static class ProveduralGenerationAlgorithms
         return corridor;
     }
 
-    public static List<BoundsInt> BinarySpacePartitioning(BoundsInt spaceToSplit, int minWidth, int minHeight)
+    public static List<Bounds> BinarySpacePartitioning(Bounds spaceToSplit, int minWidth, int minHeight)
     {
-        Queue<BoundsInt> roomsQueue = new Queue<BoundsInt>();
-        List<BoundsInt> roomList = new List<BoundsInt>();
+        Queue<Bounds> roomsQueue = new Queue<Bounds>();
+        List<Bounds> roomList = new List<Bounds>();
         roomsQueue.Enqueue(spaceToSplit);
         while (roomsQueue.Count > 0)
         {
@@ -83,22 +83,22 @@ public static class ProveduralGenerationAlgorithms
         return roomList;
     }
 
-    private static void SplitVertically(int minWidth, Queue<BoundsInt> roomsQueue, BoundsInt room)
+    private static void SplitVertically(int minWidth, Queue<Bounds> roomsQueue, Bounds room)
     {
         var xSplit = Random.Range(1, room.size.x);
-        BoundsInt room1 = new BoundsInt(room.min, new Vector3Int(xSplit, room.size.y, room.size.z));
-        BoundsInt room2 = new BoundsInt(new Vector3Int(room.min.x + xSplit, room.min.y, room.min.z),
-            new Vector3Int(room.size.x - xSplit, room.size.y, room.size.z));
+        Bounds room1 = new Bounds(room.min, new Vector3(xSplit, room.size.y, room.size.z));
+        Bounds room2 = new Bounds(new Vector3(room.min.x + xSplit, room.min.y, room.min.z),
+            new Vector3(room.size.x - xSplit, room.size.y, room.size.z));
         roomsQueue.Enqueue(room1);
         roomsQueue.Enqueue(room2);
     }
 
-    private static void SplitHorizontally(int minHeight, Queue<BoundsInt> roomsQueue, BoundsInt room)
+    private static void SplitHorizontally(int minHeight, Queue<Bounds> roomsQueue, Bounds room)
     {
         var ySplit = Random.Range(1, room.size.y);
-        BoundsInt room1 = new BoundsInt(room.min, new Vector3Int(room.size.x, ySplit, room.size.z));
-        BoundsInt room2 = new BoundsInt(new Vector3Int(room.min.x, room.min.y + ySplit, room.min.z),
-            new Vector3Int(room.size.x, room.size.y - ySplit, room.size.z));
+        Bounds room1 = new Bounds(room.min, new Vector3(room.size.x, ySplit, room.size.z));
+        Bounds room2 = new Bounds(new Vector3(room.min.x, room.min.y + ySplit, room.min.z),
+            new Vector3(room.size.x, room.size.y - ySplit, room.size.z));
         roomsQueue.Enqueue(room1);
         roomsQueue.Enqueue(room2);
     }
@@ -106,14 +106,14 @@ public static class ProveduralGenerationAlgorithms
 
 public static class Direction2D
 {
-    public static List<Vector2Int> cardinalDirectionList = new List<Vector2Int>
+    public static List<Vector2> cardinalDirectionList = new List<Vector2>
     {
-        new Vector2Int(0,1),//Up
-        new Vector2Int(1,0),//Right
-        new Vector2Int(0,-1), // Down
-        new Vector2Int(-1,0) // Left
+        new Vector2(0,1),//Up
+        new Vector2(1,0),//Right
+        new Vector2(0,-1), // Down
+        new Vector2(-1,0) // Left
     };
-    public static Vector2Int GetRandomCardinalDireaction()
+    public static Vector2 GetRandomCardinalDireaction()
     {
         return cardinalDirectionList[Random.Range(0, cardinalDirectionList.Count)];
     }

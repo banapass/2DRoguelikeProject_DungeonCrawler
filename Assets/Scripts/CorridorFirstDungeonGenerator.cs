@@ -11,22 +11,24 @@ public class CorridorFirstDungeonGenerator : SimpleRandomWalkDungeonGenerator
     [SerializeField]
     [Range(0.1f, 1)]
     private float roomPercent = 0.8f;
+    public static HashSet<Vector2> floorPositions = new HashSet<Vector2>();
 
     protected override void RunProceduralGeneration()
     {
+        floorPositions.Clear();
         CorridorFirstGeneration();
     }
 
     private void CorridorFirstGeneration()
     {
-        HashSet<Vector2Int> floorPositions = new HashSet<Vector2Int>();
-        HashSet<Vector2Int> potentialRoomPositions = new HashSet<Vector2Int>(); // 방 만들기 위한
+
+        HashSet<Vector2> potentialRoomPositions = new HashSet<Vector2>(); // 방 만들기 위한
 
         CreateCorridors(floorPositions, potentialRoomPositions); // potentialRoomPositions에 분기점 마다 시작지점을 넣어줌
 
-        HashSet<Vector2Int> roomPositions = CreateRooms(potentialRoomPositions);
+        HashSet<Vector2> roomPositions = CreateRooms(potentialRoomPositions);
 
-        List<Vector2Int> deadEnds = FindAllDeadEnds(floorPositions);
+        List<Vector2> deadEnds = FindAllDeadEnds(floorPositions);
 
         CreateRoomsAtDeadEnd(deadEnds, roomPositions);
 
@@ -36,7 +38,7 @@ public class CorridorFirstDungeonGenerator : SimpleRandomWalkDungeonGenerator
         WallGenerator.CreateWalls(floorPositions, tilemapVisualizer);
     }
     // 특정된 막다른길 위치에 RandomWalk를 이용해 방을 생성하고 roomPositions에 추가해줌
-    private void CreateRoomsAtDeadEnd(List<Vector2Int> deadEnds, HashSet<Vector2Int> roomFloors)
+    private void CreateRoomsAtDeadEnd(List<Vector2> deadEnds, HashSet<Vector2> roomFloors)
     {
         foreach (var position in deadEnds)
         {
@@ -48,9 +50,9 @@ public class CorridorFirstDungeonGenerator : SimpleRandomWalkDungeonGenerator
         }
     }
     // 막다른길 특정
-    private List<Vector2Int> FindAllDeadEnds(HashSet<Vector2Int> floorPositions)
+    private List<Vector2> FindAllDeadEnds(HashSet<Vector2> floorPositions)
     {
-        List<Vector2Int> deadEnds = new List<Vector2Int>();
+        List<Vector2> deadEnds = new List<Vector2>();
 
         foreach (var position in floorPositions)
         {
@@ -68,12 +70,12 @@ public class CorridorFirstDungeonGenerator : SimpleRandomWalkDungeonGenerator
     }
     // 특정한 시작점 위치에 방을 생성
     // roomPercent 방 생성 비율
-    private HashSet<Vector2Int> CreateRooms(HashSet<Vector2Int> potentialRoomPositions)
+    private HashSet<Vector2> CreateRooms(HashSet<Vector2> potentialRoomPositions)
     {
-        HashSet<Vector2Int> roomPositions = new HashSet<Vector2Int>();
+        HashSet<Vector2> roomPositions = new HashSet<Vector2>();
         int roomToCreateCount = Mathf.RoundToInt(potentialRoomPositions.Count * roomPercent);
 
-        List<Vector2Int> roomsToCreate = potentialRoomPositions.OrderBy(x => Guid.NewGuid()).Take(roomToCreateCount).ToList();
+        List<Vector2> roomsToCreate = potentialRoomPositions.OrderBy(x => Guid.NewGuid()).Take(roomToCreateCount).ToList();
 
         foreach (var roomPosition in roomsToCreate)
         {
@@ -85,7 +87,7 @@ public class CorridorFirstDungeonGenerator : SimpleRandomWalkDungeonGenerator
     // 
     // 길의 시작점을 potentialRoomPositions에 넣어줌. 방생성을 위해
     // corridorCount만큼 랜덤방향으로 일직선 길을 생성함
-    private void CreateCorridors(HashSet<Vector2Int> floorPositions, HashSet<Vector2Int> potentialRoomPositions)
+    private void CreateCorridors(HashSet<Vector2> floorPositions, HashSet<Vector2> potentialRoomPositions)
     {
         var currentPosition = startPos;
         potentialRoomPositions.Add(currentPosition);

@@ -9,19 +9,19 @@ public class TilemapVisualizer : MonoBehaviour
 
     [SerializeField] private TileBase floorTile, wallTop;
 
-    public void PaintFloorTiles(IEnumerable<Vector2Int> floorPostions)
+    public void PaintFloorTiles(IEnumerable<Vector2> floorPostions)
     {
         PaintTiles(floorPostions, floorTilemap, floorTile);
     }
 
 
     // 벽타일 칠함
-    internal void PaintSingleBasicWall(Vector2Int pos)
+    internal void PaintSingleBasicWall(Vector2 pos)
     {
         PaintSingleTile(wallTilemap, wallTop, pos);
     }
     // 생성된 랜덤맵의 위치 HeshSet을 가져와 타일을 칠해줌
-    private void PaintTiles(IEnumerable<Vector2Int> positions, Tilemap tilemap, TileBase tile)
+    private void PaintTiles(IEnumerable<Vector2> positions, Tilemap tilemap, TileBase tile)
     {
         foreach (var position in positions)
         {
@@ -29,9 +29,9 @@ public class TilemapVisualizer : MonoBehaviour
         }
     }
     // 타일맵에 타일을 칠함
-    private void PaintSingleTile(Tilemap tilemap, TileBase tile, Vector2Int position)
+    private void PaintSingleTile(Tilemap tilemap, TileBase tile, Vector2 position)
     {
-        var tilePos = tilemap.WorldToCell((Vector3Int)position);
+        var tilePos = tilemap.WorldToCell((Vector3)position);
         tilemap.SetTile(tilePos, tile);
     }
     public void Clear()
