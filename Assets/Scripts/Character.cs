@@ -14,7 +14,7 @@ abstract public class Character : MonoBehaviour
     [SerializeField] protected int exp;
     [SerializeField] protected bool isPossibleAttack = false;
     [SerializeField] protected bool isMyTurn = false;
-    
+
 
     protected virtual int CurrentHp
     {
@@ -33,7 +33,7 @@ abstract public class Character : MonoBehaviour
         }
     }
     abstract protected void Attack();
-    protected void TakeDamage(int damage)
+    public void TakeDamage(int damage)
     {
         CurrentHp -= damage;
     }
@@ -63,6 +63,6 @@ abstract public class Character : MonoBehaviour
     //        Debug.Log(positions);
     //    }
 
-        
+
     //}
 }

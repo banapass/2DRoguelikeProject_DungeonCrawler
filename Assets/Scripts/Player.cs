@@ -8,7 +8,8 @@ public class Player : Character
     [SerializeField] List<Item> inventroy;
     [SerializeField] int levelUpExp;
     [SerializeField] LayerMask wallLayer;
-    [SerializeField] GameObject test;
+    [SerializeField] MoveArea moveArea;
+    [SerializeField] List<MoveArea> moveAreaList = new List<MoveArea>(); // 생성뒤 삭제용
 
     int Exp
     {
@@ -23,7 +24,7 @@ public class Player : Character
 
         }
     }
-    bool IsMyTurn
+    public bool IsMyTurn
     {
         get { return isMyTurn; }
         set
@@ -32,6 +33,16 @@ public class Player : Character
             if (isMyTurn)
             {
                 StartCoroutine(Move());
+            }
+            else
+            {
+
+                for (int i = 0; i < moveAreaList.Count; i++)
+                {
+                    moveAreaList[i].DestroyArea();
+                }
+                moveAreaList.Clear();
+
             }
         }
     }
@@ -95,11 +106,11 @@ public class Player : Character
     }
     private void LevelUp()
     {
-
+        // 레벨업 로직 추가 필요
     }
     public void Equip()
     {
-
+        // 장비 장착 로직 필요
     }
     #region 캡슐화를 위한 함수
     public void Healing(int heal)
@@ -132,6 +143,7 @@ public class Player : Character
         }
 
     }
+    // BFS활용 이동 범위 체크
     void FindPath(Queue<Vector3> q)
     {
         HashSet<Vector3> path = new HashSet<Vector3>();
@@ -154,13 +166,17 @@ public class Player : Character
         }
         CreatePath(path);
     }
+    // 특정한 위치 시각화 및 세팅
     void CreatePath(HashSet<Vector3> positions)
     {
+
         foreach (var pos in positions)
         {
             if (CorridorFirstDungeonGenerator.floorPositions.Contains(pos))
             {
-                GameObject temp = Instantiate(test);
+                MoveArea temp = Instantiate(moveArea.gameObject).GetComponent<MoveArea>();
+                moveAreaList.Add(temp);
+                temp.target = this;
                 temp.transform.position = pos;
             }
         }
