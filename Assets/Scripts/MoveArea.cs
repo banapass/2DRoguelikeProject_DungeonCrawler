@@ -8,11 +8,11 @@ public class MoveArea : MonoBehaviour
     [SerializeField] Enemy enemy;
     private void OnMouseDown()
     {
-        if (target != null)
+        if (enemy != null)
         {
+            enemy.TakeDamage(target.Atk);
             target.IsMyTurn = false;
-            target.transform.position = transform.position;
-            Debug.Log("Click");
+            Debug.Log("Attack");
         }
 
     }

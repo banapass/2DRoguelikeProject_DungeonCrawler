@@ -4,9 +4,9 @@ using UnityEngine;
 
 public class Enemy : Character
 {
-    protected override void Attack()
+    public override void Attack(Character target)
     {
-
+        target.TakeDamage(Atk);
     }
 
     // Start is called before the first frame update

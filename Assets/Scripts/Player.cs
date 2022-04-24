@@ -11,6 +11,7 @@ public class Player : Character
     [SerializeField] MoveArea moveArea;
     [SerializeField] List<MoveArea> moveAreaList = new List<MoveArea>(); // 생성뒤 삭제용
 
+
     int Exp
     {
         get { return exp; }
@@ -36,12 +37,12 @@ public class Player : Character
             }
             else
             {
-
                 for (int i = 0; i < moveAreaList.Count; i++)
                 {
                     moveAreaList[i].DestroyArea();
                 }
                 moveAreaList.Clear();
+
 
             }
         }
@@ -62,11 +63,12 @@ public class Player : Character
         {
             IsMyTurn = true;
         }
-        if (Input.GetKeyDown(KeyCode.KeypadEnter))
+        if (Input.GetKeyDown(KeyCode.KeypadEnter) && IsMyTurn)
         {
-            SearchMove(2);
+            SearchMove(attackRange);
         }
     }
+
     IEnumerator Move()
     {
 
@@ -76,22 +78,22 @@ public class Player : Character
             if (Input.GetKeyDown(KeyCode.W) && MoveDirectionCheck(Vector3.up))
             {
                 transform.position += Vector3.up;
-                isMyTurn = false;
+                IsMyTurn = false;
             }
             else if (Input.GetKeyDown(KeyCode.S) && MoveDirectionCheck(Vector3.down))
             {
                 transform.position += Vector3.down;
-                isMyTurn = false;
+                IsMyTurn = false;
             }
             else if (Input.GetKeyDown(KeyCode.A) && MoveDirectionCheck(Vector3.left))
             {
                 transform.position += Vector3.left;
-                isMyTurn = false;
+                IsMyTurn = false;
             }
             if (Input.GetKeyDown(KeyCode.D) && MoveDirectionCheck(Vector3.right))
             {
                 transform.position += Vector3.right;
-                isMyTurn = false;
+                IsMyTurn = false;
             }
             yield return null;
         }
@@ -123,10 +125,11 @@ public class Player : Character
     }
     #endregion
 
-    protected override void Attack()
+    public override void Attack(Character target)
     {
-        throw new NotImplementedException();
+        target.TakeDamage(atk);
     }
+
     protected void SearchMove(int moveRange)
     {
         HashSet<Vector3> path = new HashSet<Vector3>();

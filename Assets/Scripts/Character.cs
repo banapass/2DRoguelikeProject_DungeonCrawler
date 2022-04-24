@@ -1,9 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using UnityEngine.UI;
 abstract public class Character : MonoBehaviour
 {
+    [Header("Status")]
     [SerializeField] protected int maxHp;
     [SerializeField] protected int currentHp;
     [SerializeField] protected int atk;
@@ -12,9 +13,13 @@ abstract public class Character : MonoBehaviour
     [SerializeField] protected int def;
     [SerializeField] const int CONST_DEF = 100;
     [SerializeField] protected int exp;
+    [Header("StateCheck")]
     [SerializeField] protected bool isPossibleAttack = false;
     [SerializeField] protected bool isMyTurn = false;
+    [Header("Ui")]
+    [SerializeField] Image hpbar;
 
+    public int Atk { get { return atk; } }
 
     protected virtual int CurrentHp
     {
@@ -22,9 +27,10 @@ abstract public class Character : MonoBehaviour
         set
         {
             currentHp = value;
+            hpbar.fillAmount = ((float)currentHp / (float)maxHp);
             if (currentHp < 0)
             {
-
+                currentHp = 0;
             }
             else if (currentHp > maxHp)
             {
@@ -32,7 +38,7 @@ abstract public class Character : MonoBehaviour
             }
         }
     }
-    abstract protected void Attack();
+    abstract public void Attack(Character target);
     public void TakeDamage(int damage)
     {
         CurrentHp -= damage;
