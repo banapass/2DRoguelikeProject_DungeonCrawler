@@ -12,7 +12,7 @@ public class MoveArea : MonoBehaviour
         {
             enemy.TakeDamage(target.Atk);
             target.IsMyTurn = false;
-            Debug.Log("Attack");
+            Debug.Log("EnemyAttack");
         }
 
     }

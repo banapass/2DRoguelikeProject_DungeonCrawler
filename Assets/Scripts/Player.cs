@@ -6,11 +6,26 @@ using UnityEngine;
 public class Player : Character
 {
     [SerializeField] List<Item> inventroy;
-    [SerializeField] int levelUpExp;
+    [SerializeField] int maxExp;
+    [SerializeField] int Level;
     [SerializeField] LayerMask wallLayer;
     [SerializeField] MoveArea moveArea;
     [SerializeField] List<MoveArea> moveAreaList = new List<MoveArea>(); // 생성뒤 삭제용
 
+    [SerializeField] Equipment currentWeapon;
+    public Equipment CurrentWeapon
+    {
+        get { return currentWeapon; }
+        set
+        {
+            if (currentWeapon != null)
+            {
+                atk -= currentWeapon.IncreaceAtk;
+            }
+            currentWeapon = value;
+            atk += currentWeapon.IncreaceAtk;
+        }
+    }
 
     int Exp
     {
@@ -18,7 +33,7 @@ public class Player : Character
         set
         {
             exp = value;
-            if (exp >= levelUpExp)
+            if (exp >= maxExp)
             {
                 LevelUp();
             }
@@ -109,10 +124,13 @@ public class Player : Character
     private void LevelUp()
     {
         // 레벨업 로직 추가 필요
+        exp = 0;
     }
-    public void Equip()
+    public void Equip(Equipment equip)
     {
         // 장비 장착 로직 필요
+        CurrentWeapon = equip;
+
     }
     #region 캡슐화를 위한 함수
     public void Healing(int heal)
