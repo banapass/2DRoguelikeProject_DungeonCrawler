@@ -5,15 +5,15 @@ using UnityEngine;
 
 public class Player : Character
 {
-    [SerializeField] List<Item> inventroy;
+    
     [SerializeField] int maxExp;
     [SerializeField] int Level;
     [SerializeField] LayerMask wallLayer;
     [SerializeField] MoveArea moveArea;
     [SerializeField] List<MoveArea> moveAreaList = new List<MoveArea>(); // 생성뒤 삭제용
 
-    [SerializeField] Equipment currentWeapon;
-    public Equipment CurrentWeapon
+    [SerializeField] Weapon currentWeapon;
+    public Weapon CurrentWeapon
     {
         get { return currentWeapon; }
         set
@@ -126,16 +126,23 @@ public class Player : Character
         // 레벨업 로직 추가 필요
         exp = 0;
     }
-    public void Equip(Equipment equip)
+    
+    public void Equip(Item equip)
     {
         // 장비 장착 로직 필요
-        CurrentWeapon = equip;
+        if(equip.itemType == Item.ItemType.Weapon)
+        {
+            Weapon weapon = (Weapon)equip;
+            CurrentWeapon = weapon;
+        }
+        
 
     }
     #region 캡슐화를 위한 함수
-    public void Healing(int heal)
+    public void Healing(Item item)
     {
-        currentHp += heal;
+        Potion potion = (Potion)item;
+        CurrentHp += potion.IncreaceHp;
     }
     public void GetExp(int exp)
     {
@@ -200,6 +207,14 @@ public class Player : Character
                 temp.target = this;
                 temp.transform.position = pos;
             }
+        }
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if(collision.GetComponent<PickUp>() != null)
+        {
+            Inventory.CheckSlot(collision.GetComponent<PickUp>().item);
         }
     }
 

@@ -13,11 +13,15 @@ abstract public class Character : MonoBehaviour
     [SerializeField] protected int def;
     [SerializeField] const int CONST_DEF = 100;
     [SerializeField] protected int exp;
+
     [Header("StateCheck")]
     [SerializeField] protected bool isPossibleAttack = false;
     [SerializeField] protected bool isMyTurn = false;
+
     [Header("Ui")]
-    [SerializeField] Image hpbar;
+    [SerializeField] protected Image hpbar;
+
+    
 
     public int Atk { get { return atk; } }
 
@@ -31,6 +35,7 @@ abstract public class Character : MonoBehaviour
             if (currentHp < 0)
             {
                 currentHp = 0;
+                Destroy(this.gameObject);
             }
             else if (currentHp > maxHp)
             {

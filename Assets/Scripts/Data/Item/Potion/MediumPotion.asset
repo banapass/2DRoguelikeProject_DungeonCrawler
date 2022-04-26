@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bfa9183d0deb1ee47b81744ba394ea69, type: 3}
+  m_Name: MediumPotion
+  m_EditorClassIdentifier: 
+  itemName: "\uC911\uD615 \uD3EC\uC158"
+  itemToolTip: "\uD50C\uB808\uC774\uC5B4\uC758 \uCCB4\uB825\uC744 30\uD68C\uBCF5\uD569\uB2C8\uB2E4"
+  itemSprite: {fileID: 21300000, guid: 37c85100678911b41a10f0f453777194, type: 3}
+  itemType: 1
+  increaceHp: 30
