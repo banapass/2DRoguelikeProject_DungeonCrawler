@@ -63,19 +63,20 @@ public class CorridorFirstDungeonGenerator : SimpleRandomWalkDungeonGenerator
                     neighboursCount++;
 
             }
-            if (neighboursCount == 1) // 막다른길 특정 : position기준으로 4방향을 검사 했을때 count가 1이면 막다른 길
+            if (neighboursCount == 1) // 막다른길 특정 : position기준으로 4방향을 검사 했을 때 count가 1이면 막다른 길
                 deadEnds.Add(position);
         }
         return deadEnds;
     }
     // 특정한 시작점 위치에 방을 생성
-    // roomPercent 방 생성 비율
+    // roomPercent : 방 생성 비율
     private HashSet<Vector2> CreateRooms(HashSet<Vector2> potentialRoomPositions)
     {
         HashSet<Vector2> roomPositions = new HashSet<Vector2>();
         int roomToCreateCount = Mathf.RoundToInt(potentialRoomPositions.Count * roomPercent);
 
-        List<Vector2> roomsToCreate = potentialRoomPositions.OrderBy(x => Guid.NewGuid()).Take(roomToCreateCount).ToList();
+        HashSet<Vector2> roomsToCreate = potentialRoomPositions.OrderBy(x => Guid.NewGuid())
+                                                            .Take(roomToCreateCount).ToHashSet();
 
         foreach (var roomPosition in roomsToCreate)
         {
@@ -84,7 +85,7 @@ public class CorridorFirstDungeonGenerator : SimpleRandomWalkDungeonGenerator
         }
         return roomPositions;
     }
-    // 
+
     // 길의 시작점을 potentialRoomPositions에 넣어줌. 방생성을 위해
     // corridorCount만큼 랜덤방향으로 일직선 길을 생성함
     private void CreateCorridors(HashSet<Vector2> floorPositions, HashSet<Vector2> potentialRoomPositions)

@@ -80,7 +80,7 @@ public class Player : Character
         }
         if (Input.GetKeyDown(KeyCode.KeypadEnter) && IsMyTurn)
         {
-            SearchMove(attackRange);
+            AttackableAreaCheck(attackRange);
         }
     }
 
@@ -155,7 +155,7 @@ public class Player : Character
         target.TakeDamage(atk);
     }
 
-    protected void SearchMove(int moveRange)
+    private void AttackableAreaCheck(int attackRange)
     {
         HashSet<Vector3> path = new HashSet<Vector3>();
         Vector3[] dir = { Vector3.up, Vector3.down,
@@ -165,11 +165,10 @@ public class Player : Character
         q.Enqueue(transform.position);
 
 
-        for (int i = 0; i < moveRange; i++)
+        for (int i = 0; i < attackRange; i++)
         {
             FindPath(q);
         }
-
     }
     // BFS활용 이동 범위 체크
     void FindPath(Queue<Vector3> q)
@@ -192,10 +191,11 @@ public class Player : Character
             }
 
         }
-        CreatePath(path);
+        AttackableAreaVisualize(path);
     }
+
     // 특정한 위치 시각화 및 세팅
-    void CreatePath(HashSet<Vector3> positions)
+    void AttackableAreaVisualize(HashSet<Vector3> positions)
     {
 
         foreach (var pos in positions)
