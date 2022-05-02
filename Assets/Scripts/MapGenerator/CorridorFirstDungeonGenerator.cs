@@ -13,12 +13,28 @@ public class CorridorFirstDungeonGenerator : SimpleRandomWalkDungeonGenerator
     private float roomPercent = 0.8f;
     public static HashSet<Vector2> floorPositions = new HashSet<Vector2>();
 
+    public static HashSet<HashSet<Vector2>> rooms = new HashSet<HashSet<Vector2>>();
     protected override void RunProceduralGeneration()
     {
         floorPositions.Clear();
+        rooms.Clear();
         CorridorFirstGeneration();
     }
-
+    // 현재 방 체크
+    public static HashSet<Vector2> CheckCurrentRoom(Vector2 targetPos)
+    {
+        foreach (var room in rooms)
+        {
+            foreach (var pos in room)
+            {
+                if (targetPos == pos)
+                {
+                    return room;
+                }
+            }
+        }
+        return null;
+    }
     private void CorridorFirstGeneration()
     {
 
@@ -82,6 +98,7 @@ public class CorridorFirstDungeonGenerator : SimpleRandomWalkDungeonGenerator
         {
             var roomFloor = RunRandomWalk(randomWalkParameterts, roomPosition);
             roomPositions.UnionWith(roomFloor);
+            rooms.Add(roomFloor);
         }
         return roomPositions;
     }

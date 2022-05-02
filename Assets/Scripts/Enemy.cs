@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
+using System;
 
 public class Enemy : Character
 {
@@ -10,28 +12,89 @@ public class Enemy : Character
     {
         target.TakeDamage(Atk);
     }
-    // ÀÌµ¿ ¹× °ø°İ
+    private void Awake()
+    {
+
+    }
     void Ai()
     {
-        // ¹üÀ§ ³» ÇÃ·¹ÀÌ¾î Ã¼Å©
+        // ë²”ìœ„ë‚´ í”Œë ˆì´ì–´ ì²´í¬
         if (Physics2D.OverlapBox(transform.position, new Vector2(7, 7), 120f, checkMask))
-        { 
-            if(isMyTurn)
+        {
+            if (isMyTurn)
             {
-                // ÀÚ±â ÅÏÀÏ ‹š 
+                // í”Œë ˆì´ì–´ ì¶”ê²©
                 // FindPath();
             }
         }
     }
-    // A* ¾Ë°í¸®Áò
-    void FindPath()
+
+    // A* ì•Œê³ ë¦¬ì¦˜
+    void FindPath(Vector2 startPos, Vector2 targetPos)
     {
-        // °Ë»ö ´ë»ó
-        HashSet<Vector2> targetNode = CorridorFirstDungeonGenerator.floorPositions;
-        // °Ë»öÀ» ¸¶Ä£ ³ëµå ¸®½ºÆ®
-        List<Vector2> closedNode = new List<Vector2>();
-        // ÃÖ´Ü°Å¸® ÀúÀå ¸®½ºÆ®
-        List<Vector2> finalPath = new List<Vector2>();
+        // ìºì‹±
+        HashSet<Vector2> floorPosition = CorridorFirstDungeonGenerator.floorPositions;
+        Node startNode = CreateNode(startPos);
+        Node targetNode = CreateNode(targetPos);
+
+        // ë°©ë¬¸í•  ë…¸ë“œ(Listë¡œ ë³€í™˜)
+        List<Node> openNode = new List<Node>();
+        // ë°©ë¬¸í•œ ë…¸ë“œ
+        HashSet<Node> closedNode = new HashSet<Node>();
+        // ìµœë‹¨ê±°ë¦¬
+        List<Node> finalPath = new List<Node>();
+        openNode.Add(startNode);
+        while (openNode.Count > 0)
+        {
+            Node currentNode = openNode[0];
+            for (int i = 1; i < openNode.Count; i++)
+            {
+                if (openNode[i].fCost <= currentNode.fCost && openNode[i].hCost < currentNode.hCost)
+                {
+                    currentNode = openNode[i];
+                }
+            }
+            openNode.Remove(currentNode);
+            closedNode.Add(currentNode);
+            if (currentNode == )
+
+        }
+
+    }
+    // ë…¸ë“œ ìƒì„±
+    Node CreateNode(Vector2 targetPos)
+    {
+        Node node = new Node();
+        node.position = targetPos;
+        return node;
+    }
+    int GetDistance(Node nodeA, Node nodeB)
+    {
+        int distanceX = Mathf.Abs((int)nodeA.position.x - (int)nodeB.position.x);
+        int distanceY = Mathf.Abs((int)nodeA.position.y - (int)nodeB.position.y);
+
+        if (distanceX > distanceY)
+            return 14 * distanceY + 10 * (distanceX - distanceY);
+        return 14 * distanceX + 10 * (distanceY - distanceX);
+    }
+    // ì´ì›ƒë…¸ë“œ ê²€ì‚¬ (ìƒí•˜ì¢Œìš°)
+    List<Vector2> GetNeighbours(Vector2 pos)
+    {
+        HashSet<Vector2> rooms = CorridorFirstDungeonGenerator.floorPositions;
+        List<Vector2> neighbours = new List<Vector2>();
+
+        // ìƒí•˜ì¢Œìš° ê²€ì‚¬
+        for (int i = 0; i < Direction2D.cardinalDirectionList.Count; i++)
+        {
+            var currentPos = pos + Direction2D.cardinalDirectionList[i];
+
+            // ì´ë™ê°€ëŠ¥ ì²´í¬
+            if (rooms.Contains(currentPos))
+            {
+                neighbours.Add(currentPos);
+            }
+        }
+        return neighbours;
     }
     private void OnDrawGizmos()
     {
