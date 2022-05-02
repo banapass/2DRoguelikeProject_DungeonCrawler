@@ -8,13 +8,58 @@ public class Enemy : Character
 {
     [Header("Enemy")]
     [SerializeField] LayerMask checkMask;
+    [SerializeField] Transform enemyPos;
+    [SerializeField] List<Node> visualizeNode = new List<Node>();
+    List<Node> finalPath = new List<Node>();
+    List<Node> testList = new List<Node>();
+    HashSet<Vector2> floorPosition = new HashSet<Vector2>();
+
+    private void Awake()
+    {
+        floorPosition = CorridorFirstDungeonGenerator.floorPositions;
+    }
     public override void Attack(Character target)
     {
         target.TakeDamage(Atk);
     }
-    private void Awake()
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Keypad5))
+        {
+            finalPath.Clear();
+            testList.Clear();
+            FindPath(transform.position, enemyPos.position);
+            TestCo();
+        }
+    }
+
+    void TestCo()
     {
 
+        Node test = new Node();
+        for (int i = 0; i < finalPath.Count; i++)
+        {
+
+            if ((Vector2)enemyPos.position == finalPath[i].position)
+            {
+                test = finalPath[i];
+                break;
+            }
+        }
+
+        while (true)
+        {
+
+            if (test.position == (Vector2)transform.position)
+            {
+
+                break;
+            }
+            testList.Add(test);
+            test = test.parent;
+        }
+        testList.Reverse();
+        transform.position = testList[0].position;
     }
     void Ai()
     {
@@ -33,7 +78,7 @@ public class Enemy : Character
     void FindPath(Vector2 startPos, Vector2 targetPos)
     {
         // 캐싱
-        HashSet<Vector2> floorPosition = CorridorFirstDungeonGenerator.floorPositions;
+
         Node startNode = CreateNode(startPos);
         Node targetNode = CreateNode(targetPos);
 
@@ -42,8 +87,10 @@ public class Enemy : Character
         // 방문한 노드
         HashSet<Node> closedNode = new HashSet<Node>();
         // 최단거리
-        List<Node> finalPath = new List<Node>();
+
+
         openNode.Add(startNode);
+
         while (openNode.Count > 0)
         {
             Node currentNode = openNode[0];
@@ -54,12 +101,56 @@ public class Enemy : Character
                     currentNode = openNode[i];
                 }
             }
+
             openNode.Remove(currentNode);
             closedNode.Add(currentNode);
-            if (currentNode == )
+
+            if (currentNode.position == targetNode.position)
+            {
+                //RetracePath(startNode, targetNode);
+                break;
+            }
+
+
+            foreach (Node neighbour in GetNeighbours(currentNode))
+            {
+                if (closedNode.Contains(neighbour))
+                    continue;
+
+                int neighbourCost = currentNode.gCost + GetDistance(currentNode, neighbour);
+                if (neighbourCost < neighbour.gCost || !openNode.Contains(neighbour))
+                {
+                    neighbour.gCost = neighbourCost;
+                    neighbour.hCost = GetDistance(neighbour, targetNode);
+                    neighbour.parent = currentNode;
+
+
+                    if (!openNode.Contains(neighbour))
+                    {
+                        openNode.Add(neighbour);
+                        finalPath.Add(neighbour);
+                    }
+                }
+            }
 
         }
 
+    }
+    void RetracePath(Node startNode, Node endNode)
+    {
+        List<Node> path = new List<Node>();
+        Node currentNode = endNode;
+
+        while (currentNode.position != startNode.position)
+        {
+
+            path.Add(currentNode);
+            if (currentNode.parent == null)
+                break;
+            currentNode = currentNode.parent;
+        }
+        path.Reverse();
+        visualizeNode = path;
     }
     // 노드 생성
     Node CreateNode(Vector2 targetPos)
@@ -78,20 +169,21 @@ public class Enemy : Character
         return 14 * distanceX + 10 * (distanceY - distanceX);
     }
     // 이웃노드 검사 (상하좌우)
-    List<Vector2> GetNeighbours(Vector2 pos)
+    List<Node> GetNeighbours(Node node)
     {
-        HashSet<Vector2> rooms = CorridorFirstDungeonGenerator.floorPositions;
-        List<Vector2> neighbours = new List<Vector2>();
+
+        List<Node> neighbours = new List<Node>();
 
         // 상하좌우 검사
         for (int i = 0; i < Direction2D.cardinalDirectionList.Count; i++)
         {
-            var currentPos = pos + Direction2D.cardinalDirectionList[i];
+            Node currentNode = new Node();
+            currentNode.position = node.position + Direction2D.cardinalDirectionList[i];
 
             // 이동가능 체크
-            if (rooms.Contains(currentPos))
+            if (floorPosition.Contains(currentNode.position))
             {
-                neighbours.Add(currentPos);
+                neighbours.Add(currentNode);
             }
         }
         return neighbours;
@@ -100,6 +192,21 @@ public class Enemy : Character
     {
         Gizmos.color = Color.red;
         Gizmos.DrawWireCube(transform.position, new Vector2(7, 7));
+        for (int i = 0; i < visualizeNode.Count; i++)
+        {
+            Gizmos.DrawWireCube(visualizeNode[i].position, new Vector3(1, 1, 1));
+        }
+        // for (int x = -5; x <= 5; x++)
+        // {
+        //     for (int y = -5; y <= 5; y++)
+        //     {
+        //         Gizmos.DrawWireCube(new Vector2(x, y), new Vector3(1, 1, 1));
+        //     }
+        // }
+        for (int i = 0; i < testList.Count; i++)
+        {
+            Gizmos.DrawWireCube(testList[i].position, new Vector3(1, 1, 1));
+        }
     }
 
 
