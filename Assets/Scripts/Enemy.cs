@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 using System;
+using UnityEngine.Profiling;
 
 public class Enemy : Character
 {
@@ -11,7 +12,7 @@ public class Enemy : Character
     [SerializeField] Transform enemyPos;
     [SerializeField] List<Node> visualizeNode = new List<Node>();
     List<Node> finalPath = new List<Node>();
-    List<Node> testList = new List<Node>();
+    List<Node> searchNodeList = new List<Node>();
     HashSet<Vector2> floorPosition = new HashSet<Vector2>();
 
     private void Awake()
@@ -27,22 +28,22 @@ public class Enemy : Character
         if (Input.GetKeyDown(KeyCode.Keypad5))
         {
             finalPath.Clear();
-            testList.Clear();
+            searchNodeList.Clear();
             FindPath(transform.position, enemyPos.position);
-            TestCo();
+            MoveToTarget();
         }
     }
 
-    void TestCo()
+    void MoveToTarget()
     {
 
-        Node test = new Node();
-        for (int i = 0; i < finalPath.Count; i++)
+        Node node = new Node();
+        for (int i = 0; i < searchNodeList.Count; i++)
         {
 
-            if ((Vector2)enemyPos.position == finalPath[i].position)
+            if ((Vector2)enemyPos.position == searchNodeList[i].position)
             {
-                test = finalPath[i];
+                node = searchNodeList[i];
                 break;
             }
         }
@@ -50,16 +51,14 @@ public class Enemy : Character
         while (true)
         {
 
-            if (test.position == (Vector2)transform.position)
-            {
-
+            if (node.position == (Vector2)transform.position)
                 break;
-            }
-            testList.Add(test);
-            test = test.parent;
+
+            finalPath.Add(node);
+            node = node.parent;
         }
-        testList.Reverse();
-        transform.position = testList[0].position;
+        finalPath.Reverse();
+        //transform.position = searchNodeList[0].position;
     }
     void Ai()
     {
@@ -93,6 +92,7 @@ public class Enemy : Character
 
         while (openNode.Count > 0)
         {
+
             Node currentNode = openNode[0];
             for (int i = 1; i < openNode.Count; i++)
             {
@@ -111,7 +111,7 @@ public class Enemy : Character
                 break;
             }
 
-
+            Profiler.BeginSample("TestLine");
             foreach (Node neighbour in GetNeighbours(currentNode))
             {
                 if (closedNode.Contains(neighbour))
@@ -125,13 +125,12 @@ public class Enemy : Character
                     neighbour.parent = currentNode;
 
 
-                    if (!openNode.Contains(neighbour))
-                    {
-                        openNode.Add(neighbour);
-                        finalPath.Add(neighbour);
-                    }
+                    openNode.Add(neighbour);
+                    searchNodeList.Add(neighbour);
+
                 }
             }
+            Profiler.EndSample();
 
         }
 
@@ -186,16 +185,14 @@ public class Enemy : Character
                 neighbours.Add(currentNode);
             }
         }
+
         return neighbours;
     }
     private void OnDrawGizmos()
     {
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireCube(transform.position, new Vector2(7, 7));
-        for (int i = 0; i < visualizeNode.Count; i++)
-        {
-            Gizmos.DrawWireCube(visualizeNode[i].position, new Vector3(1, 1, 1));
-        }
+        //Gizmos.color = Color.red;
+        //Gizmos.DrawWireCube(transform.position, new Vector2(7, 7));
+
         // for (int x = -5; x <= 5; x++)
         // {
         //     for (int y = -5; y <= 5; y++)
@@ -203,9 +200,9 @@ public class Enemy : Character
         //         Gizmos.DrawWireCube(new Vector2(x, y), new Vector3(1, 1, 1));
         //     }
         // }
-        for (int i = 0; i < testList.Count; i++)
+        for (int i = 0; i < searchNodeList.Count; i++)
         {
-            Gizmos.DrawWireCube(testList[i].position, new Vector3(1, 1, 1));
+            Gizmos.DrawWireCube(searchNodeList[i].position, new Vector3(1, 1, 1));
         }
     }
 

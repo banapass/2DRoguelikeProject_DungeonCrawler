@@ -21,19 +21,24 @@ public class CorridorFirstDungeonGenerator : SimpleRandomWalkDungeonGenerator
         CorridorFirstGeneration();
     }
     // 현재 방 체크
-    public static HashSet<Vector2> CheckCurrentRoom(Vector2 targetPos)
+    public static List<Room> CheckCurrentRoom(Vector2 targetPos)
     {
+        List<Room> roomList = new List<Room>();
         foreach (var room in rooms)
         {
-            foreach (var pos in room)
+            Debug.Log("Check" + rooms.Count);
+            Room newRoom;
+            newRoom.RoomPosition = room;
+            newRoom.roomType = Room.RoomType.EnemyRoom;
+
+            if (room.Contains(targetPos))
             {
-                if (targetPos == pos)
-                {
-                    return room;
-                }
+                newRoom.roomType = Room.RoomType.PlayerRoom;
             }
+
+            roomList.Add(newRoom);
         }
-        return null;
+        return roomList;
     }
     private void CorridorFirstGeneration()
     {
@@ -62,6 +67,7 @@ public class CorridorFirstDungeonGenerator : SimpleRandomWalkDungeonGenerator
             {
                 var room = RunRandomWalk(randomWalkParameterts, position);
                 roomFloors.UnionWith(room);
+                rooms.Add(room);
             }
         }
     }
