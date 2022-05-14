@@ -18,6 +18,7 @@ public class Enemy : Character
     private void Awake()
     {
         floorPosition = CorridorFirstDungeonGenerator.floorPositions;
+        enemyPos = GameObject.FindObjectOfType<Player>().transform;
     }
     public override void Attack(Character target)
     {
