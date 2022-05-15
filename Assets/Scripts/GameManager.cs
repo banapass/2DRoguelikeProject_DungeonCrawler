@@ -61,21 +61,21 @@ public class GameManager : MonoBehaviour
 
     }
 
-    private void OnDrawGizmos()
-    {
+    // private void OnDrawGizmos()
+    // {
 
-        for (int i = 0; i < rooms.Count; i++)
-        {
-            Gizmos.color = Color.blue;
-            if (rooms[i].roomType == Room.RoomType.PlayerRoom)
-            {
-                Gizmos.color = Color.red;
-            }
-            foreach (var pos in rooms[i].RoomPosition)
-            {
-                Gizmos.DrawWireCube(pos, new Vector3(1, 1, 1));
-            }
+    //     for (int i = 0; i < rooms.Count; i++)
+    //     {
+    //         Gizmos.color = Color.blue;
+    //         if (rooms[i].roomType == Room.RoomType.PlayerRoom)
+    //         {
+    //             Gizmos.color = Color.red;
+    //         }
+    //         foreach (var pos in rooms[i].RoomPosition)
+    //         {
+    //             Gizmos.DrawWireCube(pos, new Vector3(1, 1, 1));
+    //         }
 
-        }
-    }
+    //     }
+    // }
 }

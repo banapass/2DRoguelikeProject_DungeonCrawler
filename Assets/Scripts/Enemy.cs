@@ -8,7 +8,8 @@ using UnityEngine.Profiling;
 public class Enemy : Character
 {
     [Header("Enemy")]
-    [SerializeField] LayerMask checkMask;
+    [SerializeField] LayerMask playerMask;
+    [SerializeField] LayerMask enemyMask;
     [SerializeField] Transform enemyPos;
     [SerializeField] List<Node> visualizeNode = new List<Node>();
     List<Node> finalPath = new List<Node>();
@@ -18,7 +19,7 @@ public class Enemy : Character
     private void Awake()
     {
         floorPosition = CorridorFirstDungeonGenerator.floorPositions;
-        enemyPos = GameObject.FindObjectOfType<Player>().transform;
+
     }
     public override void Attack(Character target)
     {
@@ -26,60 +27,39 @@ public class Enemy : Character
     }
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Keypad5))
+        Ai();
+        if (Input.GetKeyDown(KeyCode.Keypad5) && enemyPos != null)
         {
             finalPath.Clear();
             searchNodeList.Clear();
-            FindPath(transform.position, enemyPos.position);
-            MoveToTarget();
+            FindPath((Vector2)enemyPos.position);
+            //MoveToTarget();
         }
     }
 
-    void MoveToTarget()
-    {
 
-        Node node = new Node();
-        for (int i = 0; i < searchNodeList.Count; i++)
-        {
-
-            if ((Vector2)enemyPos.position == searchNodeList[i].position)
-            {
-                node = searchNodeList[i];
-                break;
-            }
-        }
-
-        while (true)
-        {
-
-            if (node.position == (Vector2)transform.position)
-                break;
-
-            finalPath.Add(node);
-            node = node.parent;
-        }
-        finalPath.Reverse();
-        //transform.position = searchNodeList[0].position;
-    }
     void Ai()
     {
         // 범위내 플레이어 체크
-        if (Physics2D.OverlapBox(transform.position, new Vector2(7, 7), 120f, checkMask))
+        Collider2D col = Physics2D.OverlapCircle(transform.position, 5, playerMask);
+
+        if (Physics2D.OverlapCircle(transform.position, 5, playerMask))
         {
-            if (isMyTurn)
-            {
-                // 플레이어 추격
-                // FindPath();
-            }
+            enemyPos = col.transform;
         }
+        else
+        {
+            enemyPos = null;
+        }
+
     }
 
     // A* 알고리즘
-    void FindPath(Vector2 startPos, Vector2 targetPos)
+    void FindPath(Vector2 targetPos)
     {
         // 캐싱
 
-        Node startNode = CreateNode(startPos);
+        Node startNode = CreateNode((Vector2)transform.position);
         Node targetNode = CreateNode(targetPos);
 
         // 방문할 노드(List로 변환)
@@ -106,9 +86,9 @@ public class Enemy : Character
             openNode.Remove(currentNode);
             closedNode.Add(currentNode);
 
-            if (currentNode.position == targetNode.position)
+            if (currentNode.position == targetPos)
             {
-                //RetracePath(startNode, targetNode);
+                RetracePath(currentNode);
                 break;
             }
 
@@ -130,28 +110,35 @@ public class Enemy : Character
                     searchNodeList.Add(neighbour);
 
                 }
+
             }
             Profiler.EndSample();
 
         }
 
     }
-    void RetracePath(Node startNode, Node endNode)
+    void RetracePath(Node endNode)
     {
-        List<Node> path = new List<Node>();
+
         Node currentNode = endNode;
 
-        while (currentNode.position != startNode.position)
+        while (currentNode.position != (Vector2)transform.position)
         {
 
-            path.Add(currentNode);
-            if (currentNode.parent == null)
-                break;
+            finalPath.Add(currentNode);
             currentNode = currentNode.parent;
         }
-        path.Reverse();
-        visualizeNode = path;
+
+        finalPath.Reverse();
+        MoveToTarget();
     }
+
+    void MoveToTarget()
+    {
+        if (!Physics2D.Linecast(transform.position, finalPath[0].position, playerMask))
+            transform.position = finalPath[0].position;
+    }
+
     // 노드 생성
     Node CreateNode(Vector2 targetPos)
     {
@@ -181,7 +168,7 @@ public class Enemy : Character
             currentNode.position = node.position + Direction2D.cardinalDirectionList[i];
 
             // 이동가능 체크
-            if (floorPosition.Contains(currentNode.position))
+            if (floorPosition.Contains(currentNode.position) && !Physics2D.Linecast(currentNode.position, currentNode.position, enemyMask))
             {
                 neighbours.Add(currentNode);
             }
@@ -203,8 +190,16 @@ public class Enemy : Character
         // }
         for (int i = 0; i < searchNodeList.Count; i++)
         {
+            Gizmos.color = Color.white;
             Gizmos.DrawWireCube(searchNodeList[i].position, new Vector3(1, 1, 1));
         }
+        for (int i = 0; i < finalPath.Count; i++)
+        {
+            Gizmos.color = Color.red;
+            Gizmos.DrawWireCube(finalPath[i].position, new Vector3(1, 1, 1));
+        }
+
+
     }
 
 
