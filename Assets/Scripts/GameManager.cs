@@ -26,6 +26,10 @@ public class GameManager : MonoBehaviour
     [SerializeField] Enemy[] enemys;
     [SerializeField] Player player;
     [SerializeField][Range(1, 100)] int createPercent = 20;
+    [Header("Item")]
+    public PickUp dropItem;
+    [SerializeField] Potion[] potions;
+    [SerializeField] Weapon[] weapons;
 
     // Start is called before the first frame update
     private void Start()
@@ -34,8 +38,6 @@ public class GameManager : MonoBehaviour
         rooms = CorridorFirstDungeonGenerator.CheckCurrentRoom(player.transform.position);
 
         SpawnEnemy();
-
-
     }
 
     void SpawnEnemy()
@@ -49,8 +51,8 @@ public class GameManager : MonoBehaviour
             }
             foreach (var pos in rooms[i].RoomPosition)
             {
-                int percent = Random.Range(1, 101);
-                if (percent <= createPercent && createCount > 0)
+                int randomNum = Random.Range(1, 101);
+                if (randomNum <= createPercent && createCount > 0)
                 {
                     GameObject temp = Instantiate(enemys[0].gameObject);
                     temp.transform.position = pos;

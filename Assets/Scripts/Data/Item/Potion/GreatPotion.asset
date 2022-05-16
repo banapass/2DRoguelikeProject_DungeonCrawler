@@ -14,7 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemName: "\uB300\uD615 \uD3EC\uC158"
   itemToolTip: "\uD50C\uB808\uC774\uC5B4\uC758 \uCCB4\uB825\uC744 50\uD68C\uBCF5\uD569\uB2C8\uB2E4"
-  itemSprite: {fileID: 0}
-  target: {fileID: 0}
+  itemSprite: {fileID: 21300000, guid: 37c85100678911b41a10f0f453777194, type: 3}
   itemType: 1
   increaceHp: 50

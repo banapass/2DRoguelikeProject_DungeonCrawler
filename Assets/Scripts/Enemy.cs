@@ -10,7 +10,7 @@ public class Enemy : Character
     [Header("Enemy")]
     [SerializeField] LayerMask playerMask;
     [SerializeField] LayerMask enemyMask;
-    [SerializeField] Transform enemyPos;
+    [SerializeField] Player target;
     [SerializeField] List<Node> visualizeNode = new List<Node>();
     List<Node> finalPath = new List<Node>();
     List<Node> searchNodeList = new List<Node>();
@@ -28,11 +28,11 @@ public class Enemy : Character
     private void Update()
     {
         Ai();
-        if (Input.GetKeyDown(KeyCode.Keypad5) && enemyPos != null)
+        if (Input.GetKeyDown(KeyCode.Keypad5) && target.transform.position != null)
         {
             finalPath.Clear();
             searchNodeList.Clear();
-            FindPath((Vector2)enemyPos.position);
+            FindPath((Vector2)target.transform.position);
             //MoveToTarget();
         }
     }
@@ -45,11 +45,11 @@ public class Enemy : Character
 
         if (Physics2D.OverlapCircle(transform.position, 5, playerMask))
         {
-            enemyPos = col.transform;
+            target = col.GetComponent<Player>();
         }
         else
         {
-            enemyPos = null;
+            target = null;
         }
 
     }
@@ -57,16 +57,14 @@ public class Enemy : Character
     // A* 알고리즘
     void FindPath(Vector2 targetPos)
     {
-        // 캐싱
 
         Node startNode = CreateNode((Vector2)transform.position);
         Node targetNode = CreateNode(targetPos);
 
-        // 방문할 노드(List로 변환)
+        // 방문할 노드
         List<Node> openNode = new List<Node>();
         // 방문한 노드
         HashSet<Node> closedNode = new HashSet<Node>();
-        // 최단거리
 
 
         openNode.Add(startNode);
@@ -101,10 +99,10 @@ public class Enemy : Character
                 int neighbourCost = currentNode.gCost + GetDistance(currentNode, neighbour);
                 if (neighbourCost < neighbour.gCost || !openNode.Contains(neighbour))
                 {
+
                     neighbour.gCost = neighbourCost;
                     neighbour.hCost = GetDistance(neighbour, targetNode);
                     neighbour.parent = currentNode;
-
 
                     openNode.Add(neighbour);
                     searchNodeList.Add(neighbour);
@@ -135,8 +133,14 @@ public class Enemy : Character
 
     void MoveToTarget()
     {
-        if (!Physics2D.Linecast(transform.position, finalPath[0].position, playerMask))
+        if (!Physics2D.Linecast(transform.position, finalPath[attackRange].position, playerMask))
+        {
             transform.position = finalPath[0].position;
+        }
+        else
+        {
+            target.TakeDamage(atk);
+        }
     }
 
     // 노드 생성
@@ -188,17 +192,20 @@ public class Enemy : Character
         //         Gizmos.DrawWireCube(new Vector2(x, y), new Vector3(1, 1, 1));
         //     }
         // }
+
+        // 탐색한 노드 디버깅
         for (int i = 0; i < searchNodeList.Count; i++)
         {
             Gizmos.color = Color.white;
             Gizmos.DrawWireCube(searchNodeList[i].position, new Vector3(1, 1, 1));
         }
+
+        // 최단거리 디버깅
         for (int i = 0; i < finalPath.Count; i++)
         {
             Gizmos.color = Color.red;
             Gizmos.DrawWireCube(finalPath[i].position, new Vector3(1, 1, 1));
         }
-
 
     }
 
