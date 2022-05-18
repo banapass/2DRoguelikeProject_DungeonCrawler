@@ -27,20 +27,20 @@ public class Enemy : Character
     }
     private void Update()
     {
-        Ai();
+        CheckArea();
         if (Input.GetKeyDown(KeyCode.Keypad5) && target.transform.position != null)
         {
             finalPath.Clear();
             searchNodeList.Clear();
             FindPath((Vector2)target.transform.position);
-            //MoveToTarget();
+            MoveToTarget();
         }
     }
 
-
-    void Ai()
+    // 일정 범위 내 플레이어 체크
+    void CheckArea()
     {
-        // 범위내 플레이어 체크
+
         Collider2D col = Physics2D.OverlapCircle(transform.position, 5, playerMask);
 
         if (Physics2D.OverlapCircle(transform.position, 5, playerMask))
@@ -128,21 +128,44 @@ public class Enemy : Character
         }
 
         finalPath.Reverse();
-        MoveToTarget();
     }
 
+    // 이동 및 공격
     void MoveToTarget()
     {
-        if (!Physics2D.Linecast(transform.position, finalPath[attackRange].position, playerMask))
+
+        if (EnemyCheck())
         {
-            transform.position = finalPath[0].position;
+            target.TakeDamage(atk);
+
         }
         else
         {
-            target.TakeDamage(atk);
+            transform.position = finalPath[0].position;
         }
+
+
     }
 
+    bool EnemyCheck()
+    {
+        bool check = false;
+        for (int i = 0; i <= attackRange; i++)
+        {
+            // 공격 범위 내에 적이 있을 시
+            if (Physics2D.Linecast(transform.position, finalPath[i].position, playerMask))
+            {
+                check = true;
+                break;
+            }
+            // 공격 범위 내에 없을 시
+            else
+            {
+                check = false;
+            }
+        }
+        return check;
+    }
     // 노드 생성
     Node CreateNode(Vector2 targetPos)
     {
@@ -166,15 +189,30 @@ public class Enemy : Character
         List<Node> neighbours = new List<Node>();
 
         // 상하좌우 검사
-        for (int i = 0; i < Direction2D.cardinalDirectionList.Count; i++)
-        {
-            Node currentNode = new Node();
-            currentNode.position = node.position + Direction2D.cardinalDirectionList[i];
+        // for (int i = 0; i < Direction2D.cardinalDirectionList.Count; i++)
+        // {
+        //     Node currentNode = new Node();
+        //     currentNode.position = node.position + Direction2D.cardinalDirectionList[i];
 
-            // 이동가능 체크
-            if (floorPosition.Contains(currentNode.position) && !Physics2D.Linecast(currentNode.position, currentNode.position, enemyMask))
+        //     // 이동가능 체크
+        //     if (floorPosition.Contains(currentNode.position) && !Physics2D.Linecast(currentNode.position, currentNode.position, enemyMask))
+        //     {
+        //         neighbours.Add(currentNode);
+        //     }
+        // }
+
+        // 대각선 추가 검사
+        for (int x = -1; x <= 1; x++)
+        {
+            for (int y = -1; y <= 1; y++)
             {
-                neighbours.Add(currentNode);
+                Node currentNode = new Node();
+                currentNode.position = node.position + new Vector2(x, y);
+
+                if (floorPosition.Contains(currentNode.position) && !Physics2D.Linecast(currentNode.position, currentNode.position, enemyMask))
+                {
+                    neighbours.Add(currentNode);
+                }
             }
         }
 

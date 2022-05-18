@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+
 public struct Room
 {
     public Room(HashSet<Vector2> roomPos, RoomType roomType)
@@ -38,8 +39,10 @@ public class GameManager : MonoBehaviour
         rooms = CorridorFirstDungeonGenerator.CheckCurrentRoom(player.transform.position);
 
         SpawnEnemy();
+        DropItem();
     }
 
+    // 방에 적 생성
     void SpawnEnemy()
     {
         for (int i = 0; i < rooms.Count; i++)
@@ -60,9 +63,25 @@ public class GameManager : MonoBehaviour
                 }
             }
         }
-
     }
 
+    Item DropItem()
+    {
+        int randomNum = Random.Range(0, System.Enum.GetValues(typeof(Item.ItemType)).Length);
+        Item choiceItem = null;
+
+        switch (randomNum)
+        {
+            case 0:
+                choiceItem = potions[Random.Range(0, potions.Length)];
+                break;
+            case 1:
+                choiceItem = weapons[Random.Range(0, weapons.Length)];
+                break;
+
+        }
+        return choiceItem;
+    }
     // private void OnDrawGizmos()
     // {
 

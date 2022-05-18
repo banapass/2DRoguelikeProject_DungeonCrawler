@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class Player : Character
 {
-    
+
     [SerializeField] int maxExp;
     [SerializeField] int Level;
     [SerializeField] LayerMask wallLayer;
@@ -126,16 +126,16 @@ public class Player : Character
         // 레벨업 로직 추가 필요
         exp = 0;
     }
-    
+
     public void Equip(Item equip)
     {
         // 장비 장착 로직 필요
-        if(equip.itemType == Item.ItemType.Weapon)
+        if (equip.itemType == Item.ItemType.Weapon)
         {
             Weapon weapon = (Weapon)equip;
             CurrentWeapon = weapon;
         }
-        
+
 
     }
     #region 캡슐화를 위한 함수
@@ -146,7 +146,7 @@ public class Player : Character
     }
     public void GetExp(int exp)
     {
-        this.exp += exp;
+        this.Exp += exp;
     }
     #endregion
 
@@ -210,11 +210,15 @@ public class Player : Character
         }
     }
 
-    private void OnTriggerEnter2D(Collider2D collision)
+    private void OnTriggerStay2D(Collider2D collision)
     {
-        if(collision.GetComponent<PickUp>() != null)
+        if (collision.GetComponent<PickUp>() != null)
         {
-            Inventory.CheckSlot(collision.GetComponent<PickUp>().item);
+            if (Input.GetKeyDown(KeyCode.F) && Inventory.CheckEmptySlot())
+            {
+                Inventory.AddItem(collision.GetComponent<PickUp>().item);
+                Destroy(collision.gameObject);
+            }
         }
     }
 

@@ -8,18 +8,30 @@ public class Inventory : MonoBehaviour
     private void Awake()
     {
         slots = GetComponentsInChildren<Slot>();
-        
+
     }
-    public static void CheckSlot(Item item)
+    public static bool CheckEmptySlot()
     {
-        for(int i = 0; i < slots.Length;i++)
+        bool isEmpty = false;
+        for (int i = 0; i < slots.Length; i++)
         {
-            if(slots[i].ItemSlot == null)
+            if (slots[i].ItemSlot == null)
+            {
+                isEmpty = true;
+            }
+        }
+        return isEmpty;
+    }
+    public static void AddItem(Item item)
+    {
+        for (int i = 0; i < slots.Length; i++)
+        {
+            if (slots[i].ItemSlot == null)
             {
                 slots[i].ItemSlot = item;
                 break;
             }
         }
-        
+
     }
 }
