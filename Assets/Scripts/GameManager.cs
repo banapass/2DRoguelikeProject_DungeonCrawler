@@ -25,6 +25,7 @@ public class GameManager : MonoBehaviour
 {
     public List<Room> rooms = new List<Room>();
     [SerializeField] Enemy[] enemys;
+    public static List<Enemy> researchTarget = new List<Enemy>();
     [SerializeField] Player player;
     [SerializeField][Range(1, 100)] int createPercent = 20;
     [Header("Item")]
@@ -63,6 +64,18 @@ public class GameManager : MonoBehaviour
                 }
             }
         }
+    }
+
+    public static void ResearchEnemys()
+    {
+        if (researchTarget.Count < 2)
+            return;
+
+        for (int i = 1; i < researchTarget.Count; i++)
+        {
+            researchTarget[i].ResearchPath();
+        }
+        researchTarget.Clear();
     }
 
     Item DropItem()

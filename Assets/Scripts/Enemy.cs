@@ -16,6 +16,8 @@ public class Enemy : Character
     List<Node> searchNodeList = new List<Node>();
     HashSet<Vector2> floorPosition = new HashSet<Vector2>();
 
+    Vector2 prevPos;
+
     private void Awake()
     {
         floorPosition = CorridorFirstDungeonGenerator.floorPositions;
@@ -28,7 +30,7 @@ public class Enemy : Character
     private void Update()
     {
         CheckArea();
-        if (Input.GetKeyDown(KeyCode.Keypad5) && target.transform.position != null)
+        if (Input.GetKeyDown(KeyCode.Keypad5) && target != null)
         {
             finalPath.Clear();
             searchNodeList.Clear();
@@ -141,10 +143,17 @@ public class Enemy : Character
         }
         else
         {
+            prevPos = transform.position;
             transform.position = finalPath[0].position;
         }
 
 
+    }
+    public void ResearchPath()
+    {
+        transform.position = prevPos;
+        FindPath(target.transform.position);
+        MoveToTarget();
     }
 
     bool EnemyCheck()
@@ -217,6 +226,14 @@ public class Enemy : Character
         }
 
         return neighbours;
+    }
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.GetComponent<Enemy>() != null)
+        {
+            GameManager.researchTarget.Add(other.GetComponent<Enemy>());
+            GameManager.ResearchEnemys();
+        }
     }
     private void OnDrawGizmos()
     {
