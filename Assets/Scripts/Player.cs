@@ -42,16 +42,17 @@ public class Player : Character
     }
     public bool IsMyTurn
     {
-        get { return isMyTurn; }
+        get { return GameManager.IsPlayerTurn; }
         set
         {
-            isMyTurn = value;
-            if (isMyTurn)
+            GameManager.IsPlayerTurn = value;
+            if (GameManager.IsPlayerTurn)
             {
                 StartCoroutine(Move());
             }
             else
             {
+
                 for (int i = 0; i < moveAreaList.Count; i++)
                 {
                     moveAreaList[i].DestroyArea();
@@ -87,7 +88,7 @@ public class Player : Character
     IEnumerator Move()
     {
 
-        while (isMyTurn)
+        while (IsMyTurn)
         {
 
             if (Input.GetKeyDown(KeyCode.W) && MoveDirectionCheck(Vector3.up))

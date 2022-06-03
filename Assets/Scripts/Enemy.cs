@@ -11,12 +11,18 @@ public class Enemy : Character
     [SerializeField] LayerMask playerMask;
     [SerializeField] LayerMask enemyMask;
     [SerializeField] Player target;
+    public Player Target
+    {
+        get { return target; }
+    }
     [SerializeField] List<Node> visualizeNode = new List<Node>();
     List<Node> finalPath = new List<Node>();
     List<Node> searchNodeList = new List<Node>();
     HashSet<Vector2> floorPosition = new HashSet<Vector2>();
 
     Vector2 prevPos;
+
+
 
     private void Awake()
     {
@@ -29,33 +35,44 @@ public class Enemy : Character
     }
     private void Update()
     {
-        CheckArea();
-        if (Input.GetKeyDown(KeyCode.Keypad5) && target != null)
+
+
+    }
+
+    // 일정 범위 내 플레이어 체크
+    public void CheckArea()
+    {
+
+        Collider2D col = Physics2D.OverlapCircle(transform.position, 5, playerMask);
+
+
+        if (Physics2D.OverlapCircle(transform.position, 5, playerMask))
+        {
+
+            target = col.GetComponent<Player>();
+            if (!GameManager.spawnEnemys.Contains(this))
+                GameManager.spawnEnemys.Add(this);
+
+        }
+        else
+        {
+            if (GameManager.spawnEnemys.Contains(this))
+                GameManager.spawnEnemys.Remove(this);
+            target = null;
+        }
+
+    }
+    public void TryMove()
+    {
+        if (target != null)
         {
             finalPath.Clear();
             searchNodeList.Clear();
             FindPath((Vector2)target.transform.position);
             MoveToTarget();
+            GameManager.IsPlayerTurn = true;
         }
     }
-
-    // 일정 범위 내 플레이어 체크
-    void CheckArea()
-    {
-
-        Collider2D col = Physics2D.OverlapCircle(transform.position, 5, playerMask);
-
-        if (Physics2D.OverlapCircle(transform.position, 5, playerMask))
-        {
-            target = col.GetComponent<Player>();
-        }
-        else
-        {
-            target = null;
-        }
-
-    }
-
     // A* 알고리즘
     void FindPath(Vector2 targetPos)
     {
@@ -210,7 +227,7 @@ public class Enemy : Character
         //     }
         // }
 
-        // 대각선 추가 검사
+        //대각선 추가 검사
         for (int x = -1; x <= 1; x++)
         {
             for (int y = -1; y <= 1; y++)
@@ -227,14 +244,14 @@ public class Enemy : Character
 
         return neighbours;
     }
-    private void OnTriggerEnter2D(Collider2D other)
-    {
-        if (other.GetComponent<Enemy>() != null)
-        {
-            GameManager.researchTarget.Add(other.GetComponent<Enemy>());
-            GameManager.ResearchEnemys();
-        }
-    }
+    // private void OnTriggerEnter2D(Collider2D other)
+    // {
+    //     if (other.GetComponent<Enemy>() != null)
+    //     {
+    //         GameManager.researchTarget.Add(other.GetComponent<Enemy>());
+    //         GameManager.ResearchEnemys();
+    //     }
+    // }
     private void OnDrawGizmos()
     {
         //Gizmos.color = Color.red;

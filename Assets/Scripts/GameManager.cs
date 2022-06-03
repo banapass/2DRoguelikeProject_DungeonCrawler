@@ -27,6 +27,36 @@ public class GameManager : MonoBehaviour
     [SerializeField] Enemy[] enemys;
     public static List<Enemy> researchTarget = new List<Enemy>();
     [SerializeField] Player player;
+
+
+    public static HashSet<Enemy> spawnEnemys = new HashSet<Enemy>();
+
+    public static bool isPlayerTurn = true;
+    public static bool IsPlayerTurn
+    {
+        get { return isPlayerTurn; }
+        set
+        {
+            isPlayerTurn = value;
+            if (isPlayerTurn)
+            {
+
+            }
+            else
+            {
+
+                foreach (Enemy enemy in spawnEnemys)
+                {
+                    Debug.Log(spawnEnemys.Count);
+                    enemy.CheckArea();
+                    enemy.TryMove();
+                }
+
+
+            }
+        }
+    }
+
     [SerializeField][Range(1, 100)] int createPercent = 20;
     [Header("Item")]
     public PickUp dropItem;
@@ -42,7 +72,24 @@ public class GameManager : MonoBehaviour
         SpawnEnemy();
         DropItem();
     }
+    private void Update()
+    {
 
+        if (Input.GetKeyDown(KeyCode.Keypad5))
+        {
+            EnemysMove();
+        }
+    }
+    public void EnemysMove()
+    {
+        if (spawnEnemys.Count > 0)
+        {
+            foreach (var enemy in spawnEnemys)
+            {
+                enemy.TryMove();
+            }
+        }
+    }
     // 방에 적 생성
     void SpawnEnemy()
     {
@@ -59,24 +106,28 @@ public class GameManager : MonoBehaviour
                 if (randomNum <= createPercent && createCount > 0)
                 {
                     GameObject temp = Instantiate(enemys[0].gameObject);
+                    Enemy tempEnemy = temp.GetComponent<Enemy>();
+                    spawnEnemys.Add(tempEnemy);
                     temp.transform.position = pos;
                     createCount--;
                 }
             }
         }
+
+
     }
 
-    public static void ResearchEnemys()
-    {
-        if (researchTarget.Count < 2)
-            return;
+    // public static void ResearchEnemys()
+    // {
+    //     if (researchTarget.Count < 2)
+    //         return;
 
-        for (int i = 1; i < researchTarget.Count; i++)
-        {
-            researchTarget[i].ResearchPath();
-        }
-        researchTarget.Clear();
-    }
+    //     for (int i = 1; i < researchTarget.Count; i++)
+    //     {
+    //         researchTarget[i].ResearchPath();
+    //     }
+    //     researchTarget.Clear();
+    // }
 
     Item DropItem()
     {
