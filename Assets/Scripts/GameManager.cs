@@ -23,13 +23,17 @@ public struct Room
 }
 public class GameManager : MonoBehaviour
 {
+
+    public static GameManager instance;
     public List<Room> rooms = new List<Room>();
     [SerializeField] Enemy[] enemys;
     public static List<Enemy> researchTarget = new List<Enemy>();
     [SerializeField] Player player;
 
 
-    public static HashSet<Enemy> spawnEnemys = new HashSet<Enemy>();
+    public HashSet<Enemy> spawnEnemys = new HashSet<Enemy>();
+
+    public static HashSet<Enemy> checkEnemys = new HashSet<Enemy>();
 
     public static bool isPlayerTurn = true;
     public static bool IsPlayerTurn
@@ -45,13 +49,6 @@ public class GameManager : MonoBehaviour
             else
             {
 
-                foreach (Enemy enemy in spawnEnemys)
-                {
-                    Debug.Log(spawnEnemys.Count);
-                    enemy.CheckArea();
-                    enemy.TryMove();
-                }
-
 
             }
         }
@@ -63,22 +60,46 @@ public class GameManager : MonoBehaviour
     [SerializeField] Potion[] potions;
     [SerializeField] Weapon[] weapons;
 
+    private void Awake()
+    {
+        instance = this;
+
+    }
     // Start is called before the first frame update
     private void Start()
     {
         player = GameObject.FindObjectOfType<Player>();
         rooms = CorridorFirstDungeonGenerator.CheckCurrentRoom(player.transform.position);
 
+
+        foreach (var enemy in instance.spawnEnemys)
+        {
+            enemy.CheckArea();
+        }
+
         SpawnEnemy();
-        DropItem();
+        //DropItem();
     }
     private void Update()
     {
 
         if (Input.GetKeyDown(KeyCode.Keypad5))
         {
-            EnemysMove();
+            foreach (var enemy in instance.spawnEnemys)
+            {
+                enemy.CheckArea();
+            }
+
+            if (checkEnemys.Count > 0)
+            {
+
+                foreach (var enemy in checkEnemys)
+                {
+                    enemy.TryMove();
+                }
+            }
         }
+        Debug.Log(isPlayerTurn);
     }
     public void EnemysMove()
     {

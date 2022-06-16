@@ -33,11 +33,7 @@ public class Enemy : Character
     {
         target.TakeDamage(Atk);
     }
-    private void Update()
-    {
 
-
-    }
 
     // 일정 범위 내 플레이어 체크
     public void CheckArea()
@@ -50,14 +46,19 @@ public class Enemy : Character
         {
 
             target = col.GetComponent<Player>();
-            if (!GameManager.spawnEnemys.Contains(this))
-                GameManager.spawnEnemys.Add(this);
+            if (!GameManager.checkEnemys.Contains(this))
+            {
+                GameManager.checkEnemys.Add(this);
+            }
 
         }
         else
         {
-            if (GameManager.spawnEnemys.Contains(this))
-                GameManager.spawnEnemys.Remove(this);
+            if (GameManager.checkEnemys.Contains(this))
+            {
+                GameManager.checkEnemys.Remove(this);
+            }
+
             target = null;
         }
 
